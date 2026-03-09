@@ -1,0 +1,38 @@
+{
+   "test": {
+      "hello": "hello"
+   },
+   "header": {
+      "explore": "Explore",
+      "pricing": "Pricing",
+      "search": "Search",
+      "resource": "Resource",
+      "forbusiness": "For Business",
+      "register": "Register",
+      "joinMobile": "Join",
+      "login": "Login"
+   },
+   "localeSwitcher": {
+      "vi": "Vietnamese",
+      "en": "English",
+      "label": "Language"
+   },
+   "home-right": {
+      "Contact person": "Contact person"
+   },
+   "setting": {
+      "Display language": "Display language",
+      "Display mode": "Display mode",
+      "Appearance": "Appearance",
+      "Account": "Account",
+      "vi": "Vietnamese",
+      "en": "English",
+      "Logout": "Logout",
+      "General Settings": "General Settings",
+      "Light": "Light",
+      "Dark": "Dark",
+      "Two-factor authentication (2FA)": "Two-factor authentication (2FA)",
+      "Google Authenticator": "Google Authenticator",
+      "Color Themes": "Color Themes"
+   }
+}

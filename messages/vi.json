@@ -1,0 +1,38 @@
+{
+   "test": {
+      "hello": "xin chào"
+   },
+   "header": {
+      "explore": "Khám Phá",
+      "pricing": "Bảng Giá",
+      "search": "Tìm Kiếm",
+      "resource": "Tài Nguyên",
+      "forbusiness": "Dành Cho Doanh Nghiệp",
+      "register": "Đăng ký",
+      "joinMobile": "Tham Gia",
+      "login": "Đăng nhập"
+   },
+   "localeSwitcher": {
+      "vi": "Việt",
+      "en": "Anh",
+      "label": "Ngôn ngữ"
+   },
+   "home-right": {
+      "Contact person": "Người liên hệ"
+   },
+   "setting": {
+      "Display language": "Ngôn ngữ",
+      "Display mode": "Chế độ hiển thị",
+      "Appearance": "Hiển thị",
+      "Account": "Tài khoản",
+      "vi": "Tiếng Việt",
+      "en": "Tiếng Anh",
+      "Logout": "Đăng xuất",
+      "General Settings": "Cài đặt chung",
+      "Light": "Sáng",
+      "Dark": "Tối",
+      "Two-factor authentication (2FA)": "Bảo mật 2 lớp",
+      "Google Authenticator": "Google Authenticator",
+      "Color Themes": "Chủ đề màu sắc"
+   }
+}
