@@ -1,38 +1,55 @@
 {
-   "test": {
-      "hello": "hello"
-   },
-   "header": {
-      "explore": "Explore",
-      "pricing": "Pricing",
-      "search": "Search",
-      "resource": "Resource",
-      "forbusiness": "For Business",
-      "register": "Register",
-      "joinMobile": "Join",
-      "login": "Login"
-   },
-   "localeSwitcher": {
-      "vi": "Vietnamese",
-      "en": "English",
-      "label": "Language"
-   },
-   "home-right": {
-      "Contact person": "Contact person"
-   },
-   "setting": {
-      "Display language": "Display language",
-      "Display mode": "Display mode",
-      "Appearance": "Appearance",
-      "Account": "Account",
-      "vi": "Vietnamese",
-      "en": "English",
-      "Logout": "Logout",
-      "General Settings": "General Settings",
-      "Light": "Light",
-      "Dark": "Dark",
-      "Two-factor authentication (2FA)": "Two-factor authentication (2FA)",
-      "Google Authenticator": "Google Authenticator",
-      "Color Themes": "Color Themes"
-   }
+    "test": {
+        "hello": "hello"
+    },
+    "header": {
+        "explore": "Explore",
+        "pricing": "Pricing",
+        "search": "Search",
+        "resource": "Resource",
+        "forbusiness": "For Business",
+        "register": "Register",
+        "joinMobile": "Join",
+        "login": "Login"
+    },
+    "localeSwitcher": {
+        "vi": "Vietnamese",
+        "en": "English",
+        "label": "Language"
+    },
+    "home-right": {
+        "Contact person": "Contact person"
+    },
+    "setting": {
+        "Display language": "Display language",
+        "Display mode": "Display mode",
+        "Appearance": "Appearance",
+        "Account": "Account",
+        "vi": "Vietnamese",
+        "en": "English",
+        "Logout": "Logout",
+        "General Settings": "General Settings",
+        "Light": "Light",
+        "Dark": "Dark",
+        "Two-factor authentication (2FA)": "Two-factor authentication (2FA)",
+        "Google Authenticator": "Google Authenticator",
+        "Color Themes": "Color Themes"
+    },
+    "overtime": {
+        "title": "Overtime Registration",
+        "description": "Submit your overtime request for manager approval.",
+        "date": "Overtime date",
+        "startTime": "Start time",
+        "endTime": "End time",
+        "reason": "Reason",
+        "reasonPlaceholder": "Describe the task and why overtime is needed",
+        "submit": "Submit request",
+        "dateRequired": "Please select an overtime date",
+        "startTimeRequired": "Please select start time",
+        "endTimeRequired": "Please select end time",
+        "timeRangeInvalid": "End time must be later than start time",
+        "reasonRequired": "Please enter an overtime reason",
+        "reasonMin": "Reason must be at least 10 characters",
+        "createSuccess": "Overtime request submitted successfully"
+    }
 }

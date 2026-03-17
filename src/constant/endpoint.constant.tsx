@@ -69,4 +69,7 @@ export const ENDPOINT = {
         SAVE: "totp/save",
         DISABLE: "totp/disable",
     },
+    OVERTIME: {
+        CREATE: "overtime-request",
+    },
 };
