@@ -4,6 +4,8 @@ import { useCreateOvertime } from "@/api/tantask/overtime.tanstack";
 import { Button, Container, Group, Paper, Stack, Text, TextInput, Textarea, Title } from "@mantine/core";
 import { useFormik } from "formik";
 import { useTranslations } from "next-intl";
+import { useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import { toast } from "react-toastify";
 import * as Yup from "yup";
 
@@ -15,6 +17,8 @@ const parseTimeToMinutes = (value: string) => {
 export default function OvertimeRegister() {
     const t = useTranslations("overtime");
     const createOvertime = useCreateOvertime();
+    const searchParams = useSearchParams();
+    const selectedDate = searchParams.get("date") || "";
 
     const overtimeForm = useFormik({
         initialValues: {
@@ -52,6 +56,14 @@ export default function OvertimeRegister() {
             });
         },
     });
+
+    useEffect(() => {
+        if (!selectedDate) return;
+        const isValidDate = /^\d{4}-\d{2}-\d{2}$/.test(selectedDate);
+        if (!isValidDate) return;
+
+        overtimeForm.setFieldValue("date", selectedDate);
+    }, [selectedDate]);
 
     return (
         <Container size={720} py={50}>
