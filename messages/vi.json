@@ -50,6 +50,21 @@
         "timeRangeInvalid": "Giờ kết thúc phải lớn hơn giờ bắt đầu",
         "reasonRequired": "Vui lòng nhập lý do tăng ca",
         "reasonMin": "Lý do tăng ca tối thiểu 10 ký tự",
-        "createSuccess": "Gửi yêu cầu tăng ca thành công"
+        "createSuccess": "Gửi yêu cầu tăng ca thành công",
+        "historyTitle": "Lịch sử đơn tăng ca",
+        "colDate": "Ngày",
+        "colStartTime": "Bắt đầu",
+        "colEndTime": "Kết thúc",
+        "colHours": "Số giờ",
+        "colReason": "Lý do",
+        "colStatus": "Trạng thái",
+        "colCreatedAt": "Ngày gửi",
+        "statusPendingLeader": "Chờ Leader",
+        "statusPendingManager": "Chờ Manager",
+        "statusPendingDirector": "Chờ Giám đốc",
+        "statusPendingHR": "Chờ HR",
+        "statusApproved": "Đã duyệt",
+        "statusRejected": "Từ chối",
+        "statusCancelled": "Đã hủy"
     }
 }

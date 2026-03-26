@@ -44,12 +44,28 @@ export default function HomeLeft() {
             />
 
             {isOvertimePage && (
-                <Paper withBorder radius="md" p="sm">
+                <Paper withBorder radius="md" p="sm" style={{ overflow: "hidden" }}>
                     <Stack gap={8}>
                         <Text fz="sm" fw={600}>
                             Chọn ngày tăng ca
                         </Text>
-                        <DatePicker value={selectedDate} onChange={handlePickDate} />
+                        <DatePicker
+                            value={selectedDate}
+                            onChange={handlePickDate}
+                            size="xs"
+                            styles={{
+                                day: {
+                                    "&:hover": {
+                                        backgroundColor: "var(--mantine-color-blue-1)",
+                                        color: "var(--mantine-color-blue-9)",
+                                    },
+                                },
+                                calendarHeader: { width: "100%" },
+                                month: { width: "100%" },
+                                monthRow: { width: "100%" },
+                                monthCell: { textAlign: "center" },
+                            }}
+                        />
                     </Stack>
                 </Paper>
             )}

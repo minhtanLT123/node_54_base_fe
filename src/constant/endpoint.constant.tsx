@@ -71,5 +71,6 @@ export const ENDPOINT = {
     },
     OVERTIME: {
         CREATE: "overtime-request",
+        LIST: "overtime-request",
     },
 };

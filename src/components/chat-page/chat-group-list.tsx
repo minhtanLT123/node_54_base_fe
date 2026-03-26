@@ -1,12 +1,13 @@
 import { useFindAllChatGroup } from "@/api/tantask/user.tanstack";
+import Avatar from "@/components/avatar/Avatar";
+import { CHAT_NEW_MESSAGE_EVENT } from "@/helpers/chat.helper";
 import { animationList } from "@/helpers/function.helper";
 import { useAppSelector } from "@/redux/hooks";
-import { TChatGroup, TStateChat } from "@/types/chat.type";
-import { Box, Skeleton, Stack } from "@mantine/core";
+import { TAllmessage, TChatGroup, TStateChat } from "@/types/chat.type";
+import { Box, Group, Stack, Text } from "@mantine/core";
 import { Dispatch, Fragment, SetStateAction, useEffect, useRef, useState } from "react";
 import { AppendLoading } from "../data-state/append-state/AppendState";
 import NodataOverlay from "../no-data/NodataOverlay";
-import TagUser from "../tag-user/TagUser";
 
 type TProps = {
     setChat: Dispatch<SetStateAction<TStateChat | null>>;
@@ -19,6 +20,18 @@ export default function ChatGroupList({ setChat }: TProps) {
 
     const totalPageRef = useRef(0);
     const containerRef = useRef<HTMLDivElement | null>(null);
+    const [lastMessages, setLastMessages] = useState<Record<string, TAllmessage>>({});
+
+    useEffect(() => {
+        const handler = (e: Event) => {
+            const msg = (e as CustomEvent<TAllmessage>).detail;
+            if (!msg?.chatGroupId) return;
+            setLastMessages((prev) => ({ ...prev, [String(msg.chatGroupId)]: msg }));
+        };
+        window.addEventListener(CHAT_NEW_MESSAGE_EVENT, handler);
+        return () => window.removeEventListener(CHAT_NEW_MESSAGE_EVENT, handler);
+    }, []);
+
     const findAllChatGroup = useFindAllChatGroup({
         pagination: { page: page, pageSize: 5 },
         filters: {},
@@ -47,9 +60,14 @@ export default function ChatGroupList({ setChat }: TProps) {
 
     const handleClickChatGroup = (chatGroup: TChatGroup) => {
         setChat({
-            chatGroupId: chatGroup.id,
+            chatGroupId: String(chatGroup.id),
             chatGroupName: chatGroup.name || "",
-            chatGroupMembers: (chatGroup.ChatGroupMembers as any) || [],
+            chatGroupMembers: (chatGroup.ChatGroupMembers || []).map((member) => ({
+                avatar: member.Users?.avatar,
+                fullName: member.Users?.fullName,
+                roleId: member.Users?.roleId || "",
+                userId: String(member.Users?.id || member.userId),
+            })),
         });
     };
 
@@ -73,7 +91,7 @@ export default function ChatGroupList({ setChat }: TProps) {
                         noDataComponent={<NodataOverlay visible />}
                     >
                         {chatGroups.map((chatGroup, i) => {
-                            const user = (chatGroup?.ChatGroupMembers || []).find((user) => user.userId !== userId);
+                            const user = (chatGroup?.ChatGroupMembers || []).find((user) => String(user.userId) !== String(userId));
                             if (!user) return <Fragment key={i}></Fragment>;
                             return (
                                 <Box
@@ -90,7 +108,35 @@ export default function ChatGroupList({ setChat }: TProps) {
                                         borderRadius: `10px`,
                                     }}
                                 >
-                                    <TagUser fullName={user.Users?.fullName} avatar={user.Users?.avatar} />
+                                    {(() => {
+                                        const lastMsg =
+                                            lastMessages[String(chatGroup.id)] ||
+                                            (chatGroup.ChatMessages?.[0]
+                                                ? {
+                                                      messageText: chatGroup.ChatMessages[0].messageText || "",
+                                                      chatGroupId: String(chatGroup.id),
+                                                      userIdSender: String(chatGroup.ChatMessages[0].userIdSender),
+                                                      createdAt: String(chatGroup.ChatMessages[0].createdAt),
+                                                  }
+                                                : null);
+                                        return (
+                                            <Group wrap="nowrap" gap={5}>
+                                                <Box sx={{ flexShrink: 0 }}>
+                                                    <Avatar size="md" fullName={user.Users?.fullName} avatar={user.Users?.avatar} />
+                                                </Box>
+                                                <Stack gap={0} style={{ minWidth: 0, flex: 1 }}>
+                                                    <Text truncate fw={500} size="sm">
+                                                        {user.Users?.fullName}
+                                                    </Text>
+                                                    {lastMsg && (
+                                                        <Text truncate size="xs" c="dimmed">
+                                                            {lastMsg.messageText}
+                                                        </Text>
+                                                    )}
+                                                </Stack>
+                                            </Group>
+                                        );
+                                    })()}
                                 </Box>
                             );
                         })}

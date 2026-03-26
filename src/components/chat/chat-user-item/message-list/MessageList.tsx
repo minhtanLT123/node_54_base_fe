@@ -31,6 +31,7 @@ export default function MessageList({ stateChat, dataSendMessage }: TProps) {
     const virtuosoRef = useRef<VirtuosoHandle>(null);
 
     const user = useAppSelector((state) => state.user.info);
+    const currentUserId = user?.id ? String(user.id) : "";
 
     const chatMessage = useGetChatMessage({
         pagination: { pageIndex: page, pageSize: 10 },
@@ -69,7 +70,7 @@ export default function MessageList({ stateChat, dataSendMessage }: TProps) {
         if (!dataSendMessage?.chatGroupId) return;
 
         // 👉 Nếu bạn gửi => luôn scroll
-        if (dataSendMessage.userIdSender === user?.id) {
+        if (String(dataSendMessage.userIdSender) === currentUserId) {
             shouldScrollRef.current = true;
         }
         // 👉 Nếu người khác gửi và bạn đang ở cuối => scroll
@@ -81,7 +82,7 @@ export default function MessageList({ stateChat, dataSendMessage }: TProps) {
             if (prev.length === 0) return [dataSendMessage];
             return [...prev, dataSendMessage];
         });
-    }, [dataSendMessage]);
+    }, [currentUserId, dataSendMessage]);
 
     // Khi allMessages thay đổi → nếu có flag scroll thì scroll
     useEffect(() => {
@@ -119,16 +120,17 @@ export default function MessageList({ stateChat, dataSendMessage }: TProps) {
                 firstItemIndex={firstItemIndex}
                 style={{ height: "100%" }}
                 itemContent={(index, messageItem: TAllmessage) => {
-                    const userRecipient = stateChat.chatGroupMembers.find((member) => member.userId === messageItem.userIdSender);
+                    const messageSenderId = String(messageItem.userIdSender);
+                    const userRecipient = stateChat.chatGroupMembers.find((member) => String(member.userId) === messageSenderId);
                     return (
                         <Fragment key={index}>
-                            {messageItem.userIdSender === user?.id ? (
+                            {messageSenderId === currentUserId ? (
                                 <SenderMessageItem
                                     messageItem={{
                                         avatar: user?.avatar,
                                         message: messageItem.messageText,
                                         createdAt: messageItem.createdAt || "",
-                                        userId: messageItem.userIdSender,
+                                        userId: messageSenderId,
                                         roleId: user.roleId || "",
                                         fullName: user?.fullName,
                                     }}

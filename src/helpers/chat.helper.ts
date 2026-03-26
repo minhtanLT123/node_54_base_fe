@@ -1,88 +1,106 @@
 import { CHAT_BUBBLE, CHAT_OPENED } from "@/constant/chat.constant";
-import { TStateChat } from "@/types/chat.type";
+import { TAllmessage, TStateChat } from "@/types/chat.type";
 import _ from "lodash";
 import { logWithColor } from "./function.helper";
 
+export const CHAT_BOXES_UPDATED_EVENT = "chat-boxes-updated";
+export const CHAT_NEW_MESSAGE_EVENT = "chat-new-message";
+
+export const emitChatNewMessage = (message: TAllmessage) => {
+    if (typeof window !== "undefined") {
+        window.dispatchEvent(new CustomEvent(CHAT_NEW_MESSAGE_EVENT, { detail: message }));
+    }
+};
+
+const emitChatBoxesUpdated = () => {
+    if (typeof window !== "undefined") {
+        window.dispatchEvent(new Event(CHAT_BOXES_UPDATED_EVENT));
+    }
+};
+
 export const getChatOpened = (key: string): TStateChat[] => {
-   const stringLocal = localStorage.getItem(key);
-   if (stringLocal === null) return [];
+    const stringLocal = localStorage.getItem(key);
+    if (stringLocal === null) return [];
 
-   const reuslt = JSON.parse(stringLocal);
-   if (!_.isArray(reuslt)) return [];
+    const reuslt = JSON.parse(stringLocal);
+    if (!_.isArray(reuslt)) return [];
 
-   return reuslt;
+    return reuslt;
 };
 
 export const addChatOpened = (stateChatNew: TStateChat, onSuccess?: () => void) => {
-   const chatListOpened = getChatOpened(CHAT_OPENED);
-   const chatListBubble = getChatOpened(CHAT_BUBBLE);
+    const chatListOpened = getChatOpened(CHAT_OPENED);
+    const chatListBubble = getChatOpened(CHAT_BUBBLE);
 
-   // kiểm tra xem chatGroupId đã tồn tại hay chưa
-   const isAdd = [...chatListOpened, ...chatListBubble].find((stateChat: TStateChat) => {
-      return stateChat.chatGroupId === stateChatNew.chatGroupId;
-   });
+    // kiểm tra xem chatGroupId đã tồn tại hay chưa
+    const isAdd = [...chatListOpened, ...chatListBubble].find((stateChat: TStateChat) => {
+        return stateChat.chatGroupId === stateChatNew.chatGroupId;
+    });
 
-   // nếu chatGroupId chưa tồn tại thì thêm mới
-   if (isAdd === undefined) {
-      if (chatListOpened.length >= 2) {
-         // xoá phần tử đầu tiên trong chatListOpened
-         const itemOpenedremove = chatListOpened.shift();
+    // nếu chatGroupId chưa tồn tại thì thêm mới
+    if (isAdd === undefined) {
+        if (chatListOpened.length >= 2) {
+            // xoá phần tử đầu tiên trong chatListOpened
+            const itemOpenedremove = chatListOpened.shift();
 
-         // thêm phần tử mới vào cuối chatListOpened
-         chatListOpened.push(stateChatNew);
+            // thêm phần tử mới vào cuối chatListOpened
+            chatListOpened.push(stateChatNew);
 
-         // thêm phần tử được xoá từ chatListOpened vào cuối chatListBubble
-         if (itemOpenedremove) chatListBubble.push(itemOpenedremove);
+            // thêm phần tử được xoá từ chatListOpened vào cuối chatListBubble
+            if (itemOpenedremove) chatListBubble.push(itemOpenedremove);
 
-         localStorage.setItem(CHAT_OPENED, JSON.stringify(chatListOpened));
-         localStorage.setItem(CHAT_BUBBLE, JSON.stringify(chatListBubble));
-      } else {
-         // thêm phần tử mới vào cuối chatListOpened
-         chatListOpened.push(stateChatNew);
-         localStorage.setItem(CHAT_OPENED, JSON.stringify(chatListOpened));
-      }
-   }
+            localStorage.setItem(CHAT_OPENED, JSON.stringify(chatListOpened));
+            localStorage.setItem(CHAT_BUBBLE, JSON.stringify(chatListBubble));
+            emitChatBoxesUpdated();
+        } else {
+            // thêm phần tử mới vào cuối chatListOpened
+            chatListOpened.push(stateChatNew);
+            localStorage.setItem(CHAT_OPENED, JSON.stringify(chatListOpened));
+            emitChatBoxesUpdated();
+        }
+    }
 
-   if (onSuccess) onSuccess();
+    if (onSuccess) onSuccess();
 };
 
 export const removeChatOpened = (stateChat: TStateChat, key: string, onSuccess?: () => void) => {
-   const listChatOpened = getChatOpened(key);
+    const listChatOpened = getChatOpened(key);
 
-   if (_.isArray(listChatOpened)) {
-      _.remove(listChatOpened, (itemChat) => itemChat.chatGroupId === stateChat.chatGroupId);
-      localStorage.setItem(key, JSON.stringify(listChatOpened));
-   }
+    if (_.isArray(listChatOpened)) {
+        _.remove(listChatOpened, (itemChat) => itemChat.chatGroupId === stateChat.chatGroupId);
+        localStorage.setItem(key, JSON.stringify(listChatOpened));
+        emitChatBoxesUpdated();
+    }
 
-   if (onSuccess) onSuccess();
+    if (onSuccess) onSuccess();
 };
 
 export const openChatFromBuble = (stateChat: TStateChat, onSuccess?: () => void) => {
-   removeChatOpened(stateChat, CHAT_BUBBLE);
-   addChatOpened(stateChat);
-   if (onSuccess) onSuccess();
+    removeChatOpened(stateChat, CHAT_BUBBLE);
+    addChatOpened(stateChat);
+    if (onSuccess) onSuccess();
 };
 
 export function listenToEvent(socket: any, eventName: string, callback: (...args: any[]) => void) {
-   socket?.on(eventName, callback);
-   logWithColor.sln().mes("🟢 LISTENING - ", { color: "green" }).mes(eventName, { color: "cyan", fontWeight: "bold" }).eln();
+    socket?.on(eventName, callback);
+    logWithColor.sln().mes("🟢 LISTENING - ", { color: "green" }).mes(eventName, { color: "cyan", fontWeight: "bold" }).eln();
 }
 
 export function removeEventListener(socket: any, eventName: string, callback?: (...args: any[]) => void) {
-   if (callback) {
-      socket?.off(eventName, callback);
-   } else {
-      socket?.off(eventName);
-   }
-   logWithColor.sln().mes("🔴 REMOVED - ", { color: "red" }).mes(eventName, { color: "cyan", fontWeight: "bold" }).eln();
+    if (callback) {
+        socket?.off(eventName, callback);
+    } else {
+        socket?.off(eventName);
+    }
+    logWithColor.sln().mes("🔴 REMOVED - ", { color: "red" }).mes(eventName, { color: "cyan", fontWeight: "bold" }).eln();
 }
 
 export function emitToEvent(socket: any, eventName: string, payload: any, cb?: (data: any) => void) {
-   socket?.emit(eventName, payload, cb);
-   logWithColor
-      .sln()
-      .mes("🔵 EMIT - ", { color: "blue" })
-      .mes(eventName, { color: "cyan", fontWeight: "bold" })
-      .mes(payload, { color: "gray", fontSize: "12px" })
-      .eln();
+    socket?.emit(eventName, payload, cb);
+    logWithColor
+        .sln()
+        .mes("🔵 EMIT - ", { color: "blue" })
+        .mes(eventName, { color: "cyan", fontWeight: "bold" })
+        .mes(payload, { color: "gray", fontSize: "12px" })
+        .eln();
 }

@@ -4,7 +4,6 @@ import RootPage from "@/components/root-page/RootPage";
 import OvertimeRegister from "@/page/overtime/OvertimeRegister";
 import { Box } from "@mantine/core";
 import HomeLeft from "@/page/home/home-left/HomeLeft";
-import HomeRight from "@/page/home/home-right/HomeRight";
 
 export default function page() {
     return (
@@ -14,7 +13,7 @@ export default function page() {
                     return {
                         display: "grid",
                         [u.largerThan("md")]: {
-                            gridTemplateColumns: "250px 1fr 250px",
+                            gridTemplateColumns: "250px 1fr",
                         },
                         [u.smallerThan("md")]: {
                             gridTemplateColumns: "1fr",
@@ -42,21 +41,6 @@ export default function page() {
 
                 <Box>
                     <OvertimeRegister />
-                </Box>
-
-                <Box
-                    sx={(_, u) => {
-                        return {
-                            [u.smallerThan("md")]: {
-                                display: "none",
-                            },
-                            [u.largerThan("md")]: {
-                                display: "block",
-                            },
-                        };
-                    }}
-                >
-                    <HomeRight />
                 </Box>
             </Box>
         </RootPage>

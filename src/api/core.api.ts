@@ -3,6 +3,13 @@ import { ENDPOINT } from "@/constant/endpoint.constant";
 import { getCookieHeader, setCookieHeader } from "@/helpers/cookies.helper";
 import { clearTokensAction } from "./actions/auth.action";
 
+const TOKEN_EXPIRED = "TOKEN_EXPIRED";
+
+type ErrorResponse = {
+    message?: string;
+    errorCode?: string;
+};
+
 export async function logout() {
     await clearTokensAction();
     // googleLogout();
@@ -23,7 +30,7 @@ type FetchOptions = RequestInit & { body?: any; isFormData?: boolean };
 class APIClient {
     private baseURL: string;
     private isRefreshing = false;
-    private refreshQueue: Array<() => void> = [];
+    private refreshQueue: Array<(refreshSucceeded: boolean) => void> = [];
 
     constructor(baseURL: string) {
         this.baseURL = baseURL;
@@ -63,58 +70,63 @@ class APIClient {
             }
         }
 
-        // ✅ Xử lý lỗi 403: Access Token đã hết hạn → Cần refresh token
-        if (response.status === 403) {
+        const cloneResponse = response.clone();
+        const errorData = await this.parseErrorResponse(cloneResponse);
+        const shouldRefreshToken = this.shouldRefreshToken(response.status, errorData);
+
+        if (shouldRefreshToken) {
             console.log({
                 status: response.status,
                 url: response.url,
                 message: `Access Token đã hết hạn → Cần refresh token`,
+                errorCode: errorData?.errorCode,
             });
 
             if (!this.isRefreshing) {
                 this.isRefreshing = true;
 
-                // Gọi refresh ngay lập tức
-                const refreshResult = await this.refreshAccessToken();
+                try {
+                    const refreshResult = await this.refreshAccessToken();
 
-                this.isRefreshing = false;
+                    this.resolveRefreshQueue(Boolean(refreshResult));
 
-                if (refreshResult) {
-                    // replay các request đã chờ
-                    this.refreshQueue.forEach((cb) => cb());
-                    this.refreshQueue = [];
-
-                    // gọi lại request hiện tại
-                    return this.request<T>(url, options);
-                } else {
-                    await logout();
-                    throw new Error("Refresh token failed, logout.");
+                    if (refreshResult) {
+                        return this.request<T>(url, options);
+                    }
+                } finally {
+                    this.isRefreshing = false;
                 }
+
+                await logout();
+                throw new Error("Refresh token failed, logout.");
             }
 
-            // nếu đang refresh: request hiện tại phải chờ
             return new Promise<T>((resolve, reject) => {
-                this.refreshQueue.push(() => {
+                this.refreshQueue.push((refreshSucceeded) => {
+                    if (!refreshSucceeded) {
+                        reject(new Error("Refresh token failed, logout."));
+                        return;
+                    }
+
                     this.request<T>(url, options).then(resolve).catch(reject);
                 });
             });
         }
 
-        // ✅ Xử lý lỗi 401: không có quyền truy cập tài nguyên ngay cả khi đã đăng nhập -> Logout
         if (response.status === 401) {
             console.log({
                 status: response.status,
                 url: response.url,
                 message: `Không có quyền truy cập tài nguyên ngay cả khi đã đăng nhập → Logout`,
+                errorCode: errorData?.errorCode,
             });
             await logout();
-            throw new Error("Unauthorized");
+            throw new Error(errorData?.message || "Unauthorized");
         }
 
         if (!response.ok) {
-            const errorData = await response.json();
             console.log({ errorData });
-            throw new Error(errorData.message || `Error ${response.status}`);
+            throw new Error(errorData?.message || `Error ${response.status}`);
         }
 
         return response.json();
@@ -146,6 +158,29 @@ class APIClient {
             return res;
         } catch (error) {
             console.log(error);
+            return null;
+        }
+    }
+
+    private resolveRefreshQueue(refreshSucceeded: boolean) {
+        this.refreshQueue.forEach((cb) => cb(refreshSucceeded));
+        this.refreshQueue = [];
+    }
+
+    private shouldRefreshToken(status: number, errorData?: ErrorResponse | null) {
+        return (status === 401 || status === 403) && errorData?.errorCode === TOKEN_EXPIRED;
+    }
+
+    private async parseErrorResponse(response: Response): Promise<ErrorResponse | null> {
+        const contentType = response.headers.get("content-type") || "";
+
+        if (!contentType.includes("application/json")) {
+            return null;
+        }
+
+        try {
+            return (await response.json()) as ErrorResponse;
+        } catch {
             return null;
         }
     }

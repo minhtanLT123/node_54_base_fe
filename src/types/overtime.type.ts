@@ -6,7 +6,7 @@ export type TCreateOvertimeReq = {
 };
 
 export type TOvertimeRequest = {
-    id: string;
+    id: number;
     date: string;
     startTime: string;
     endTime: string;

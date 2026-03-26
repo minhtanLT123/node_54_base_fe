@@ -50,6 +50,21 @@
         "timeRangeInvalid": "End time must be later than start time",
         "reasonRequired": "Please enter an overtime reason",
         "reasonMin": "Reason must be at least 10 characters",
-        "createSuccess": "Overtime request submitted successfully"
+        "createSuccess": "Overtime request submitted successfully",
+        "historyTitle": "My Overtime Requests",
+        "colDate": "Date",
+        "colStartTime": "Start",
+        "colEndTime": "End",
+        "colHours": "Hours",
+        "colReason": "Reason",
+        "colStatus": "Status",
+        "colCreatedAt": "Submitted at",
+        "statusPendingLeader": "Pending Leader",
+        "statusPendingManager": "Pending Manager",
+        "statusPendingDirector": "Pending Director",
+        "statusPendingHR": "Pending HR",
+        "statusApproved": "Approved",
+        "statusRejected": "Rejected",
+        "statusCancelled": "Cancelled"
     }
 }
